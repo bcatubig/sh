@@ -2,6 +2,7 @@ package sh
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"os/exec"
@@ -101,15 +102,31 @@ func (c *Command) Run() (*RunOutput, error) {
 	err := cmd.Run()
 
 	if err != nil {
-		// TODO: check for non-zero return code
+		// Validate that non-zero is equal to expectedExitCode if set
+		var e *exec.ExitError
+		if errors.As(err, &e) {
+			rc := e.ExitCode()
+			if rc == c.expectedReturnCode {
+				return &RunOutput{
+					ReturnCode: rc,
+					Output:     buf,
+				}, nil
+			} else {
+				return &RunOutput{
+					ReturnCode: rc,
+					Output:     buf,
+				}, err
+			}
+		}
+
 		return &RunOutput{
-			ReturnCode: 0,
+			ReturnCode: 1,
 			Output:     buf,
 		}, err
 	}
 
 	return &RunOutput{
-		ReturnCode: 0, // TODO: change this
+		ReturnCode: 0,
 		Output:     buf,
 	}, nil
 
