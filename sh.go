@@ -38,7 +38,7 @@ func WorkingDir(dir string) func(*Command) {
 }
 
 // Writers sets the writers used for stdout/stderr output
-func Writers(writers []io.Writer) func(*Command) {
+func Writers(writers ...io.Writer) func(*Command) {
 	return func(c *Command) {
 		c.writers = writers
 	}
