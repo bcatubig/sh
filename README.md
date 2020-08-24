@@ -30,16 +30,21 @@ func main() {
             "-detailed-exit-code", 
             tfDir,
         ),
+        // We should expect to see code 2 returned
         sh.ExpectedReturnCode(2),
+        // Stream output to stdout as well
         sh.Writers(os.Stdout),
     )
     
-    output, err := c.Run()
+    // Output will always be populated with stdout/stderr
+    result, err := c.Run()
     
     if err != nil {
+        fmt.Println(result.Output.String())
+        fmt.Println(result.Output.ReturnCode)
         log.Fatal(err)
     }
     
-    fmt.Println(output.String())
+    fmt.Println(result.Output.String())
 }
 ```
