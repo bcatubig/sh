@@ -23,8 +23,10 @@ func main() {
     tfDir := "./infra/terraform"
     c := sh.NewCommand("terraform", 
         sh.Args(
-            "init", 
-            "-no-color", 
+            "plan", 
+            "-no-color",
+            "-out",
+            "plan.tfplan",
             "-detailed-exit-code", 
             tfDir,
         ),
