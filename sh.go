@@ -172,5 +172,5 @@ func getReturnCode(err error) (int, error) {
 		return e.ExitCode(), nil
 	}
 
-	return 0, fmt.Errorf("not a valid ExitError")
+	return -1, fmt.Errorf("not a valid ExitError")
 }
