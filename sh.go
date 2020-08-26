@@ -86,7 +86,7 @@ func NewCommand(binary string, opts ...func(command *Command)) *Command {
 
 // Run will execute a shell command and wait for it to finish, returning stdout/stderr combined output
 func (c *Command) Run() (*RunOutput, error) {
-	return runCommand(nil, c)
+	return runCommand(context.TODO(), c)
 }
 
 // Run will execute a shell command with a context and wait for it to finish, returning stdout/stderr combined output
@@ -102,12 +102,7 @@ func runCommand(ctx context.Context, c *Command) (*RunOutput, error) {
 	mw := io.MultiWriter(append(c.writers, buf)...)
 
 	// Create a low level Command object
-	var cmd *exec.Cmd
-	if ctx == nil {
-		cmd = exec.Command(c.binary, c.args...)
-	} else {
-		cmd = exec.CommandContext(ctx, c.binary, c.args...)
-	}
+	cmd := exec.CommandContext(ctx, c.binary, c.args...)
 
 	// Configure the command to write to our multi-writer
 	cmd.Stdout = mw
