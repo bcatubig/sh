@@ -36,7 +36,7 @@ func main() {
         sh.Writers(os.Stdout),
     )
     
-    // Output will always be populated with stdout/stderr
+    // result will always be populated with stdout/stderr
     result, err := c.Run()
     
     if err != nil {
