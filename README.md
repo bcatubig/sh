@@ -22,7 +22,7 @@ import (
 func main() {
     tfDir := "./infra/terraform"
     c := sh.NewCommand("terraform", 
-        sh.Args(
+        sh.WithArgs(
             "plan", 
             "-no-color",
             "-out",
@@ -31,20 +31,19 @@ func main() {
             tfDir,
         ),
         // We should expect to see code 2 returned
-        sh.ExpectedReturnCode(2),
+        sh.WithExpectedReturnCode(2),
         // Stream output to stdout as well
-        sh.Writers(os.Stdout),
+        sh.WithWriters(os.Stdout),
     )
     
     // result will always be populated with stdout/stderr
     result, err := c.Run()
     
     if err != nil {
-        fmt.Println(result.Output.String())
-        fmt.Println(result.Output.ReturnCode)
         log.Fatal(err)
     }
     
     fmt.Println(result.Output.String())
+    fmt.Println(result.ReturnCode)
 }
 ```
