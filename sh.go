@@ -9,50 +9,6 @@ import (
 	"os/exec"
 )
 
-// Args sets the arguments passed to the binary
-func Args(args ...string) func(*Command) {
-	return func(c *Command) {
-		c.args = args
-	}
-}
-
-// Environment sets the command subshell environment
-func Environment(env map[string]string) func(*Command) {
-	return func(c *Command) {
-		c.environment = env
-	}
-}
-
-// Input sets stdin input to the process
-func Input(input io.Reader) func(*Command) {
-	return func(c *Command) {
-		c.input = input
-	}
-}
-
-// WorkingDir sets the command subshell current working directory
-func WorkingDir(dir string) func(*Command) {
-	return func(c *Command) {
-		c.workingDir = dir
-	}
-}
-
-// Writers sets the writers used for stdout/stderr output
-func Writers(writers ...io.Writer) func(*Command) {
-	return func(c *Command) {
-		c.writers = writers
-	}
-}
-
-// ExpectedReturnCode sets the expected process return code
-//
-// Default: 0
-func ExpectedReturnCode(code int) func(*Command) {
-	return func(c *Command) {
-		c.expectedReturnCode = code
-	}
-}
-
 // Command represents a command to be run
 type Command struct {
 	binary             string
@@ -86,19 +42,19 @@ func NewCommand(binary string, opts ...func(command *Command)) *Command {
 
 // Run will execute a shell command and wait for it to finish, returning stdout/stderr combined output
 func (c *Command) Run() (*RunOutput, error) {
-	return runCommand(context.TODO(), c)
+	return runCommandWithContext(context.TODO(), c)
 }
 
 // Run will execute a shell command with a context and wait for it to finish, returning stdout/stderr combined output
 func (c *Command) RunWithContext(ctx context.Context) (*RunOutput, error) {
-	return runCommand(ctx, c)
+	return runCommandWithContext(ctx, c)
 }
 
-func runCommand(ctx context.Context, c *Command) (*RunOutput, error) {
+func runCommandWithContext(ctx context.Context, c *Command) (*RunOutput, error) {
 	// Create a buffer to write stdout/stderr to
 	buf := &bytes.Buffer{}
 
-	// Create a multiwriter
+	// Create a multi-writer
 	mw := io.MultiWriter(append(c.writers, buf)...)
 
 	// Create a low level Command object
@@ -114,7 +70,7 @@ func runCommand(ctx context.Context, c *Command) (*RunOutput, error) {
 	// Configure the working directory
 	cmd.Dir = c.workingDir
 
-	// Configure Environment
+	// Configure the environment
 	if c.environment != nil {
 		envSlice := generateEnvSlice(c.environment)
 		cmd.Env = envSlice

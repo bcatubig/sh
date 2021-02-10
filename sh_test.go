@@ -22,7 +22,7 @@ func TestCommand_Run(t *testing.T) {
 			name: "ls with args",
 			bin:  "ls",
 			opts: []func(*Command){
-				Args("-lha"),
+				WithArgs("-lha"),
 			},
 			wantErr: false,
 		},
@@ -30,11 +30,11 @@ func TestCommand_Run(t *testing.T) {
 			name: "echo env",
 			bin:  "sh",
 			opts: []func(*Command){
-				Writers(os.Stdout),
-				Environment(map[string]string{
+				WithWriters(os.Stdout),
+				WithEnvironment(map[string]string{
 					"NAME": "joe",
 				}),
-				Args(
+				WithArgs(
 					"-c",
 					"echo \"hello, ${NAME}\"",
 				),
@@ -45,11 +45,11 @@ func TestCommand_Run(t *testing.T) {
 			name: "exit with expected non-zero exit code",
 			bin:  "sh",
 			opts: []func(*Command){
-				Args(
+				WithArgs(
 					"-c",
 					"exit 2",
 				),
-				ExpectedReturnCode(2),
+				WithExpectedReturnCode(2),
 			},
 			expectedRC: 2,
 			wantErr:    false,
@@ -58,7 +58,7 @@ func TestCommand_Run(t *testing.T) {
 			name: "simulate exit error",
 			bin:  "sh",
 			opts: []func(*Command){
-				Args(
+				WithArgs(
 					"-c",
 					"exit 1",
 				),
